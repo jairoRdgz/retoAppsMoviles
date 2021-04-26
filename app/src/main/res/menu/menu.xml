@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/addLocation"
+        android:icon="@drawable/baseline_add_black_24dp"
+        android:title="agregar" />
+    <item
+        android:id="@+id/mapLocation"
+        android:icon="@drawable/baseline_room_black_24dp"
+        android:title="map" />
+    <item
+        android:id="@+id/listLocation"
+        android:icon="@drawable/baseline_catching_pokemon_black_24dp"
+        android:title="buscar" />
+</menu>
