@@ -17,9 +17,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -28,6 +31,7 @@ public class MapsFragment extends Fragment {
     private GoogleMap mMap;
     private LocationManager manager;
     private Marker myMarker;
+    private ArrayList<Marker> myMarkers;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -44,12 +48,26 @@ public class MapsFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
+            myMarkers = new ArrayList<Marker>();
+
             LatLng posini = new LatLng(3.4,-76.5);
             myMarker = mMap.addMarker(new MarkerOptions().position(posini));
 
             requestLocation();
+            //addMarker(6.0,25.0);
         }
     };
+
+    public void addMarker(double lat, double lon){
+
+        LatLng pos = new LatLng(lat,lon);
+        //LatLng pos = new LatLng(3.8,-73.5);
+        MarkerOptions options = new MarkerOptions();
+        options.position(pos);
+        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        myMarkers.add(mMap.addMarker(options));
+
+    }
 
 
     @Nullable
