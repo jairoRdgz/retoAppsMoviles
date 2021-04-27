@@ -89,10 +89,13 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         txtDirection = view.findViewById(R.id.txtDirection);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         adapter = new LocationAdapter();
 
 
         fb = FirebaseFirestore.getInstance();
+=======
+>>>>>>> parent of c6130fa (Fixed MenuError)
 =======
 >>>>>>> parent of c6130fa (Fixed MenuError)
         /*
