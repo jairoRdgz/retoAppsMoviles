@@ -27,10 +27,9 @@
         tools:layout_editor_absoluteY="313dp">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/places"
-            android:layout_width="0dp"
-            android:layout_height="600dp"
-            android:layout_marginTop="54dp" />
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
 
     <ImageButton

@@ -16,10 +16,9 @@ public class LocationView extends RecyclerView.ViewHolder {
 
     public LocationView(ConstraintLayout root) {
         super(root);
-        this.root = root;
-        nombre =  root.findViewById(R.id.nombre);
-        direccion =  root.findViewById(R.id.direccion);
-        coordenadas =  root.findViewById(R.id.coordenadas);
+        nombre = root.findViewById(R.id.nombre);
+        direccion = root.findViewById(R.id.direccion);
+        coordenadas = root.findViewById(R.id.coordenadas);
     }
 
     public ConstraintLayout getRoot() {

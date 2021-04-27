@@ -3,34 +3,25 @@ package com.example.reto;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +36,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     Button btnRegistrar;
     TextView txtDirection;
     View view;
-    RecyclerView places;
+    RecyclerView recycler;
     File file;
     List<Address> lista;
     LocationAdapter adapter;
@@ -73,7 +64,6 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_menu, container, false);
-        places = view.findViewById(R.id.places);
 
         btnBuscar = view.findViewById(R.id.btnBuscar);
         btnBuscar.setOnClickListener(this);
@@ -87,11 +77,15 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         place = view.findViewById(R.id.place);
         txtDirection = view.findViewById(R.id.txtDirection);
         //llManager = view.findViewById(R.id.llManager);
+
         llManager = new LinearLayoutManager(view.getContext());
         adapter = new LocationAdapter();
-        places.setAdapter(adapter);
-        places.setLayoutManager(llManager);
-        places.setHasFixedSize(true);
+        recycler = view.findViewById(R.id.recycler);
+        recycler.setHasFixedSize(true);
+        recycler.setLayoutManager(llManager);
+        recycler.setAdapter(adapter);
+
+
 
         // Inflate the layout for this fragment
         return view;

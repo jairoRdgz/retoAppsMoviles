@@ -11,9 +11,9 @@ public class Location {
     protected double lon;
     protected Image img;
 
-    public Location(String name, String address, double lat, double lon, Image img){
-        this.name = name;
-        this.address = address;
+    public Location(String nombre, String direccion, double lat, double lon, Image img){
+        this.name = nombre;
+        this.address = direccion;
         this.lat = lat;
         this.lon = lon;
         this.img = img;
