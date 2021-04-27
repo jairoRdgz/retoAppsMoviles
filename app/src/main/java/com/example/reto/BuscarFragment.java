@@ -1,7 +1,9 @@
 package com.example.reto;
 
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -9,6 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Toast;
+
+import com.example.reto.util.Cosntants;
+import com.example.reto.util.HTTPSWebUtilDomi;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -17,10 +30,12 @@ import android.view.ViewGroup;
  */
 public class BuscarFragment extends Fragment {
 
-    View view;
-    RecyclerView recycler;
-    LocationAdapter adapter;
-    LinearLayoutManager llManager;
+    private View view;
+    private RecyclerView recycler;
+    private ArrayAdapter<Location> locationAdapter;
+    private ArrayList<Location> locations;
+    private LocationAdapter adapter;
+    private LinearLayoutManager llManager;
 
     public BuscarFragment() {
         // Required empty public constructor
@@ -38,8 +53,10 @@ public class BuscarFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -52,15 +69,38 @@ public class BuscarFragment extends Fragment {
         recycler.setLayoutManager(llManager);
         recycler.setAdapter(adapter);
 
+        locations = new ArrayList<Location>();
+        recycler.setAdapter(adapter);
+
+        getUsuarios();
 
         // Inflate the layout for this fragment
         return view;
     }
 
-    public void addLocattion(Location loc){
-        //Location loc = new Location("nombre", "direccion",6.0, 25.0, null);
-        //adapter.addLocation(loc);
-        adapter.addLocation(loc);
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void getUsuarios() {
+        HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
+        Gson gson = new Gson();
+
+        new Thread(
+                ()->{
+                    String response = https.GETrequest(Cosntants.BASEURL+"locations.json");
+                    Type tipo = new TypeToken<HashMap<String, Location>>(){}.getType();
+                    HashMap<String, Location> loca = gson.fromJson(response, tipo);
+
+                    loca.forEach(
+                            (key, value)->{
+                                locations.add(value);
+                            }
+                    );
+                    requireActivity().runOnUiThread(
+                            ()->{
+                                adapter.notifyDataSetChanged();
+                            }
+                    );
+                }
+        ).start();
     }
 
 }

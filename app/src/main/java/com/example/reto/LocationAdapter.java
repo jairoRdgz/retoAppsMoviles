@@ -23,6 +23,10 @@ public class LocationAdapter  extends RecyclerView.Adapter<LocationView> {
         locations.add(location);
     }
 
+    public ArrayList<Location> getLocations() {
+        return locations;
+    }
+
     @NonNull
     @Override
     public LocationView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.reto.util.Cosntants;
 import com.example.reto.util.HTTPSWebUtilDomi;
@@ -118,7 +119,12 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
         new Thread(
                 ()->{
-                    https.PUTrequest(Cosntants.BASEURL+"location/"+location.getName()+".json",json );
+                    String response = https.PUTrequest(Cosntants.BASEURL+"location/"+location.getName()+".json",json );
+                    requireActivity().runOnUiThread(
+                            ()->{
+                                Toast.makeText(view.getContext(),"Agregado",Toast.LENGTH_LONG).show();
+                            }
+                    );
                 }
         ).start();
 
