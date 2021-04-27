@@ -64,6 +64,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_menu, container, false);
+        //View view2 = inflater.inflate(R.layout.fragment_buscar, container, false);
 
         btnBuscar = view.findViewById(R.id.btnBuscar);
         btnBuscar.setOnClickListener(this);
@@ -76,14 +77,14 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
         place = view.findViewById(R.id.place);
         txtDirection = view.findViewById(R.id.txtDirection);
-        //llManager = view.findViewById(R.id.llManager);
 
-        llManager = new LinearLayoutManager(view.getContext());
+        /*
+        llManager = new LinearLayoutManager(view2.getContext());
         adapter = new LocationAdapter();
-        recycler = view.findViewById(R.id.recycler);
+        recycler = (RecyclerView) view2.findViewById(R.id.recycler);
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(llManager);
-        recycler.setAdapter(adapter);
+        recycler.setAdapter(adapter);*/
 
 
 
