@@ -1,12 +1,20 @@
 package com.example.reto;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +24,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +45,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     TextView txtDirection;
     View view;
     RecyclerView places;
+    File file;
 
     public MenuFragment() {
         // Required empty public constructor
@@ -87,6 +99,21 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
     }
 
+    public void agregarImagen(){
+        Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        /*file = new File(Environment.getExternalStorageDirectory() + "/photo.png");
+        Log.e(">>>>", "" + file);
+        Uri uri = FileProvider.getUriForFile(view.getContext(), "com.example.reto", file);
+        intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);*/
+        startActivity(intento);
+    }
+
+    public void abrirGaleria(){
+        Intent in = new Intent(Intent.ACTION_GET_CONTENT);
+        in.setType("*/*");
+        startActivityForResult(in, 13);
+    }
+
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -98,10 +125,17 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
                     e.printStackTrace();
                 }
             case R.id.btnAgregarImagen:
+                agregarImagen();
                 break;
             case R.id.btnRegistrar:
                 register();
                 break;
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
 }
