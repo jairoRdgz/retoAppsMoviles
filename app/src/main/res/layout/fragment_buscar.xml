@@ -38,6 +38,6 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/txtSearch"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_search_black_24dp" />
+        app:srcCompat="@drawable/outline_saved_search_black_24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
