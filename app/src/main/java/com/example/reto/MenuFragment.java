@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
@@ -48,6 +49,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     File file;
     List<Address> lista;
     LocationAdapter adapter;
+    LinearLayoutManager llManager;
 
     public MenuFragment() {
         // Required empty public constructor
@@ -71,6 +73,8 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_menu, container, false);
+        places = view.findViewById(R.id.places);
+
         btnBuscar = view.findViewById(R.id.btnBuscar);
         btnBuscar.setOnClickListener(this);
 
@@ -82,10 +86,12 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
         place = view.findViewById(R.id.place);
         txtDirection = view.findViewById(R.id.txtDirection);
-        places = view.findViewById(R.id.places);
-
+        //llManager = view.findViewById(R.id.llManager);
+        llManager = new LinearLayoutManager(view.getContext());
         adapter = new LocationAdapter();
         places.setAdapter(adapter);
+        places.setLayoutManager(llManager);
+        places.setHasFixedSize(true);
 
         // Inflate the layout for this fragment
         return view;
