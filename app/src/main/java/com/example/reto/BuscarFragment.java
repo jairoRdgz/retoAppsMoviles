@@ -51,11 +51,16 @@ public class BuscarFragment extends Fragment {
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(llManager);
         recycler.setAdapter(adapter);
-        Location loc = new Location("nombre", "direccion",6.0, 25.0, null);
-        adapter.addLocation(loc);
+
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public void addLocattion(Location loc){
+        //Location loc = new Location("nombre", "direccion",6.0, 25.0, null);
+        //adapter.addLocation(loc);
+        adapter.addLocation(loc);
     }
 
 }
