@@ -16,11 +16,12 @@ public class LocationAdapter  extends RecyclerView.Adapter<LocationView> {
 
     public LocationAdapter(){
         locations = new ArrayList<>();
-        this.notifyDataSetChanged();
+
     }
 
     public void addLocation(Location location){
         locations.add(location);
+        this.notifyDataSetChanged();
     }
 
     public ArrayList<Location> getLocations() {
