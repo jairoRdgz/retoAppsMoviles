@@ -46,6 +46,8 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     View view;
     RecyclerView places;
     File file;
+    List<Address> lista;
+    LocationAdapter adapter;
 
     public MenuFragment() {
         // Required empty public constructor
@@ -82,6 +84,9 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         txtDirection = view.findViewById(R.id.txtDirection);
         places = view.findViewById(R.id.places);
 
+        adapter = new LocationAdapter();
+        places.setAdapter(adapter);
+
         // Inflate the layout for this fragment
         return view;
 
@@ -89,14 +94,19 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
     public void searchPlace() throws IOException {
         Geocoder geoCoder = new Geocoder(view.getContext());
-        List<Address> lista = geoCoder.getFromLocationName(place.getText().toString(),1);
+        lista = geoCoder.getFromLocationName(place.getText().toString(),1);
         txtDirection.setText(lista.get(0).getAddressLine(0));
     }
 
-    public void register(){
+    public void register() throws IOException {
+
         String nombre = place.getText().toString();
         String direccion = txtDirection.getText().toString();
-
+        double lat = lista.get(0).getLatitude();
+        double lon = lista.get(0).getLongitude();
+        Location location = new Location(nombre, direccion,lat, lon, null);
+        adapter.addLocation(location);
+        
     }
 
     public void agregarImagen(){
@@ -128,7 +138,12 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
                 agregarImagen();
                 break;
             case R.id.btnRegistrar:
-                register();
+                try {
+                    register();
+                    break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
