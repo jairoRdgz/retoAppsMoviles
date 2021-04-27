@@ -19,6 +19,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.reto.util.Cosntants;
+import com.example.reto.util.HTTPSWebUtilDomi;
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -58,6 +62,8 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
@@ -90,8 +96,8 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
         // Inflate the layout for this fragment
         return view;
-
     }
+
 
     public void searchPlace() throws IOException {
         Geocoder geoCoder = new Geocoder(view.getContext());
@@ -105,7 +111,18 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         String direccion = txtDirection.getText().toString();
         double lat = lista.get(0).getLatitude();
         double lon = lista.get(0).getLongitude();
+
         Location location = new Location(nombre, direccion,lat, lon, null);
+        Gson gson = new Gson();
+        String json = gson.toJson(location);
+        HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
+        new Thread(
+                ()->{
+                    https.PUTrequest(Cosntants.BASEURL+"location/"+location.getName()+".json",json );
+                }
+        ).start();
+
+
         adapter.addLocation(location);
         
     }
