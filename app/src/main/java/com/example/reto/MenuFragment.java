@@ -108,12 +108,23 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
 
     public void searchPlace() throws IOException {
-        Geocoder geoCoder = new Geocoder(view.getContext());
-        lista = geoCoder.getFromLocationName(place.getText().toString(),1);
-        txtDirection.setText(lista.get(0).getAddressLine(0));
+        new Thread(
+                () ->{
+                    Geocoder geoCoder = new Geocoder(view.getContext());
+                    try {
+                        lista = geoCoder.getFromLocationName(place.getText().toString(),1);
+                        txtDirection.setText(lista.get(0).getAddressLine(0));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        ).start();
+
     }
 
     public void register() throws IOException {
+
 
         String nombre = place.getText().toString();
         String direccion = txtDirection.getText().toString();
@@ -135,6 +146,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     }
 
     public void agregarImagen(){
+        System.out.println("Camaraaaaaaa!!!");
         Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         /*file = new File(Environment.getExternalStorageDirectory() + "/photo.png");
         Log.e(">>>>", "" + file);
@@ -150,26 +162,21 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.btnBuscar:
-                try {
+    public void onClick(View v){
+        try {
+            switch (v.getId()) {
+                case R.id.btnBuscar:
                     searchPlace();
                     break;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            case R.id.btnAgregarImagen:
-                agregarImagen();
-                break;
-            case R.id.btnRegistrar:
-                try {
+                case R.id.btnAgregarImagen:
+                    agregarImagen();
+                    break;
+                case R.id.btnRegistrar:
                     register();
                     break;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 

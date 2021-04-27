@@ -84,13 +84,13 @@ public class BuscarFragment extends Fragment {
                         Location p = doc.toObject(Location.class);
                         if (p!=null) {
                             adapter.addLocation(p);
-                            System.out.println("aqui estoy");
+                            System.out.println("Tus locations");
                         }
                     }
                 }
         );
 
-        getUsuarios();
+        //getUsuarios();
 
         // Inflate the layout for this fragment
         return view;

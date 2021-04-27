@@ -21,6 +21,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -32,6 +34,7 @@ public class MapsFragment extends Fragment {
     private LocationManager manager;
     private Marker myMarker;
     private ArrayList<Marker> myMarkers;
+    private FirebaseFirestore fb;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -61,7 +64,6 @@ public class MapsFragment extends Fragment {
     public void addMarker(double lat, double lon){
 
         LatLng pos = new LatLng(lat,lon);
-        //LatLng pos = new LatLng(3.8,-73.5);
         MarkerOptions options = new MarkerOptions();
         options.position(pos);
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
@@ -75,7 +77,29 @@ public class MapsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
+        fb = FirebaseFirestore.getInstance();
+
+        fb.collection("location").get().addOnSuccessListener(
+                command->{
+                    for(DocumentSnapshot doc: command.getDocuments()){
+                        com.example.reto.Location p = doc.toObject(com.example.reto.Location.class);
+                        if (p!=null) {
+                            LatLng pos = new LatLng(p.getLat(),p.getLon());
+                            MarkerOptions options = new MarkerOptions();
+                            options.position(pos);
+                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                            myMarkers.add(mMap.addMarker(options));
+                            System.out.println("You are the red marker");
+                        }
+                    }
+                }
+        );
+
         return inflater.inflate(R.layout.fragment_maps, container, false);
+
+
+
 
     }
 
