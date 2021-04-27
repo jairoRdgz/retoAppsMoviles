@@ -2,6 +2,8 @@ package com.example.reto;
 
 import android.media.Image;
 
+import java.util.ArrayList;
+
 public class Location {
     protected String name;
     protected String address;
@@ -56,4 +58,7 @@ public class Location {
     public void setImg(Image img) {
         this.img = img;
     }
+
+    private static int lastLocation= 0;
+
 }
