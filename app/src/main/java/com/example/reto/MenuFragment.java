@@ -85,6 +85,8 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         place = view.findViewById(R.id.place);
         txtDirection = view.findViewById(R.id.txtDirection);
 
+        adapter = new LocationAdapter();
+
         /*
         llManager = new LinearLayoutManager(view2.getContext());
         adapter = new LocationAdapter();
