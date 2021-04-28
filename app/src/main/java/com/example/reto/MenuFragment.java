@@ -22,11 +22,13 @@ import android.widget.Toast;
 
 import com.example.reto.util.Cosntants;
 import com.example.reto.util.HTTPSWebUtilDomi;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,6 +48,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     List<Address> lista;
     LocationAdapter adapter;
     LinearLayoutManager llManager;
+    FirebaseFirestore fb;
 
     public MenuFragment() {
         // Required empty public constructor
@@ -85,8 +88,16 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         place = view.findViewById(R.id.place);
         txtDirection = view.findViewById(R.id.txtDirection);
 
+<<<<<<< HEAD
+<<<<<<< HEAD
         adapter = new LocationAdapter();
 
+
+        fb = FirebaseFirestore.getInstance();
+=======
+>>>>>>> parent of c6130fa (Fixed MenuError)
+=======
+>>>>>>> parent of c6130fa (Fixed MenuError)
         /*
         llManager = new LinearLayoutManager(view2.getContext());
         adapter = new LocationAdapter();
@@ -103,32 +114,37 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
 
     public void searchPlace() throws IOException {
-        Geocoder geoCoder = new Geocoder(view.getContext());
-        lista = geoCoder.getFromLocationName(place.getText().toString(),1);
-        txtDirection.setText(lista.get(0).getAddressLine(0));
+        new Thread(
+                () ->{
+                    Geocoder geoCoder = new Geocoder(view.getContext());
+                    try {
+                        lista = geoCoder.getFromLocationName(place.getText().toString(),1);
+                        txtDirection.setText(lista.get(0).getAddressLine(0));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+        ).start();
+
     }
 
     public void register() throws IOException {
+
 
         String nombre = place.getText().toString();
         String direccion = txtDirection.getText().toString();
         double lat = lista.get(0).getLatitude();
         double lon = lista.get(0).getLongitude();
 
-        Location location = new Location(nombre, direccion,lat, lon, null);
+        Location location = new Location(UUID.randomUUID().toString(),nombre, direccion,lat, lon, null);
+
+        fb.collection("location").document(location.getId()).set(location);
+
+
         Gson gson = new Gson();
         String json = gson.toJson(location);
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
-        new Thread(
-                ()->{
-                    String response = https.PUTrequest(Cosntants.BASEURL+"location/"+location.getName()+".json",json );
-                    requireActivity().runOnUiThread(
-                            ()->{
-                                Toast.makeText(view.getContext(),"Agregado",Toast.LENGTH_LONG).show();
-                            }
-                    );
-                }
-        ).start();
 
 
         adapter.addLocation(location);
@@ -136,6 +152,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     }
 
     public void agregarImagen(){
+        System.out.println("Camaraaaaaaa!!!");
         Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         /*file = new File(Environment.getExternalStorageDirectory() + "/photo.png");
         Log.e(">>>>", "" + file);
@@ -151,26 +168,21 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View v) {
-        switch(v.getId()){
-            case R.id.btnBuscar:
-                try {
+    public void onClick(View v){
+        try {
+            switch (v.getId()) {
+                case R.id.btnBuscar:
                     searchPlace();
                     break;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            case R.id.btnAgregarImagen:
-                agregarImagen();
-                break;
-            case R.id.btnRegistrar:
-                try {
+                case R.id.btnAgregarImagen:
+                    agregarImagen();
+                    break;
+                case R.id.btnRegistrar:
                     register();
                     break;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                break;
+            }
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 

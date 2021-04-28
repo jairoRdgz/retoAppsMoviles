@@ -5,18 +5,24 @@ import android.media.Image;
 import java.util.ArrayList;
 
 public class Location {
+    protected String id;
     protected String name;
     protected String address;
     protected double lat;
     protected double lon;
     protected Image img;
 
-    public Location(String nombre, String direccion, double lat, double lon, Image img){
+    public Location(String id,String nombre, String direccion, double lat, double lon, Image img){
+        this.id = id;
         this.name = nombre;
         this.address = direccion;
         this.lat = lat;
         this.lon = lon;
         this.img = img;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {

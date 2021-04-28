@@ -16,6 +16,10 @@ import android.widget.Toast;
 
 import com.example.reto.util.Cosntants;
 import com.example.reto.util.HTTPSWebUtilDomi;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -33,9 +37,10 @@ public class BuscarFragment extends Fragment {
     private View view;
     private RecyclerView recycler;
     private ArrayAdapter<Location> locationAdapter;
-    private ArrayList<Location> locations;
+    private Task<QuerySnapshot> locations;
     private LocationAdapter adapter;
     private LinearLayoutManager llManager;
+    private FirebaseFirestore fb;
 
     public BuscarFragment() {
         // Required empty public constructor
@@ -69,10 +74,23 @@ public class BuscarFragment extends Fragment {
         recycler.setLayoutManager(llManager);
         recycler.setAdapter(adapter);
 
-        locations = new ArrayList<Location>();
+        //locations = adapter.getLocations();
         recycler.setAdapter(adapter);
+        fb = FirebaseFirestore.getInstance();
 
-        getUsuarios();
+        fb.collection("location").get().addOnSuccessListener(
+                command->{
+                    for(DocumentSnapshot doc: command.getDocuments()){
+                        Location p = doc.toObject(Location.class);
+                        if (p!=null) {
+                            adapter.addLocation(p);
+                            System.out.println("Tus locations");
+                        }
+                    }
+                }
+        );
+
+        //getUsuarios();
 
         // Inflate the layout for this fragment
         return view;
@@ -83,24 +101,7 @@ public class BuscarFragment extends Fragment {
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
         Gson gson = new Gson();
 
-        new Thread(
-                ()->{
-                    String response = https.GETrequest(Cosntants.BASEURL+"locations.json");
-                    Type tipo = new TypeToken<HashMap<String, Location>>(){}.getType();
-                    HashMap<String, Location> loca = gson.fromJson(response, tipo);
 
-                    loca.forEach(
-                            (key, value)->{
-                                locations.add(value);
-                            }
-                    );
-                    requireActivity().runOnUiThread(
-                            ()->{
-                                adapter.notifyDataSetChanged();
-                            }
-                    );
-                }
-        ).start();
     }
 
 }
