@@ -77,21 +77,7 @@ public class BuscarFragment extends Fragment {
 
         //locations = adapter.getLocations();
         recycler.setAdapter(adapter);
-        fb = FirebaseFirestore.getInstance();
-
-        /*fb.collection("location").get().addOnSuccessListener(
-                command->{
-                    for(DocumentSnapshot doc: command.getDocuments()){
-                        Location p = doc.toObject(Location.class);
-                        if (p!=null) {
-                            adapter.addLocation(p);
-                            System.out.println("Tus locations");
-                        }
-                    }
-                }
-        );*/
-
-        //getUsuarios();
+        getUsuarios();
 
         // Inflate the layout for this fragment
         return view;
@@ -105,22 +91,23 @@ public class BuscarFragment extends Fragment {
         new Thread(
                 () -> {
                     String response = https.GETrequest(Cosntants.BASEURL + "locations.json");
-                    Type tipo = new TypeToken<HashMap<String, Location>>() {
-                    }.getType();
+                    Type tipo = new TypeToken<HashMap<String, Location>>() {}.getType();
                     HashMap<String, Location> loca = gson.fromJson(response, tipo);
 
                     loca.forEach(
                             (key, value) -> {
-                                locations.add(value);
+                                //PasarLos values al metodo y asignarlos al row ese
+                                adapter.addLocation(value);
+                                requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
                             }
                     );
-                    requireActivity().runOnUiThread(
-                            () -> {
-                                adapter.notifyDataSetChanged();
-                            }
-                    );
+                    requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
                 }
         ).start();
+    }
+
+    private void setLocationRow(){
+
     }
 
 }
