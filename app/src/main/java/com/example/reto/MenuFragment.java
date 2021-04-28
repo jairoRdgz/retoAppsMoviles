@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.reto.util.Cosntants;
 import com.example.reto.util.HTTPSWebUtilDomi;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -49,6 +50,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     LocationAdapter adapter;
     LinearLayoutManager llManager;
     FirebaseFirestore fb;
+
 
     public MenuFragment() {
         // Required empty public constructor
@@ -125,23 +127,48 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
     public void register() throws IOException {
 
-
         String nombre = place.getText().toString();
+        String direccion = txtDirection.getText().toString();
+        double lat = lista.get(0).getLatitude();
+        double lon = lista.get(0).getLongitude();
+        Location location = new Location(UUID.randomUUID().toString(), nombre, direccion,lat, lon, null);
+        Gson gson = new Gson();
+        String json = gson.toJson(location);
+        HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
+        new Thread(
+                ()->{
+                    https.PUTrequest(Cosntants.BASEURL+"location/"+location.getName()+".json",json );
+                    String response = https.PUTrequest(Cosntants.BASEURL+"location/"+location.getName()+".json",json );
+                    requireActivity().runOnUiThread(
+                            ()->{
+                                Toast.makeText(view.getContext(),"Agregado",Toast.LENGTH_LONG).show();
+                            }
+                    );
+                }
+        ).start();
+        /*String nombre = place.getText().toString();
         String direccion = txtDirection.getText().toString();
         double lat = lista.get(0).getLatitude();
         double lon = lista.get(0).getLongitude();
 
         Location location = new Location(UUID.randomUUID().toString(),nombre, direccion,lat, lon, null);
+        System.out.println("location creado");
 
-        fb.collection("location").document(location.getId()).set(location);
 
+        fb.collection("appmoviles-33a3c-default-rtdb").document(location.getId()).set(location).addOnSuccessListener(
+                command -> {
+                    Toast.makeText(getContext(), "Registrar places", Toast.LENGTH_SHORT).show();
+                    System.out.println("Agregado");
+                });
+
+        fb.collection("Location").document().set(location);
 
         Gson gson = new Gson();
         String json = gson.toJson(location);
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
 
 
-        adapter.addLocation(location);
+        adapter.addLocation(location);*/
         
     }
 

@@ -37,7 +37,8 @@ public class BuscarFragment extends Fragment {
     private View view;
     private RecyclerView recycler;
     private ArrayAdapter<Location> locationAdapter;
-    private Task<QuerySnapshot> locations;
+    private Task<QuerySnapshot> loc;
+    private ArrayList<Location> locations;
     private LocationAdapter adapter;
     private LinearLayoutManager llManager;
     private FirebaseFirestore fb;
@@ -78,7 +79,7 @@ public class BuscarFragment extends Fragment {
         recycler.setAdapter(adapter);
         fb = FirebaseFirestore.getInstance();
 
-        fb.collection("location").get().addOnSuccessListener(
+        /*fb.collection("location").get().addOnSuccessListener(
                 command->{
                     for(DocumentSnapshot doc: command.getDocuments()){
                         Location p = doc.toObject(Location.class);
@@ -88,7 +89,7 @@ public class BuscarFragment extends Fragment {
                         }
                     }
                 }
-        );
+        );*/
 
         //getUsuarios();
 
@@ -101,7 +102,25 @@ public class BuscarFragment extends Fragment {
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
         Gson gson = new Gson();
 
+        new Thread(
+                () -> {
+                    String response = https.GETrequest(Cosntants.BASEURL + "locations.json");
+                    Type tipo = new TypeToken<HashMap<String, Location>>() {
+                    }.getType();
+                    HashMap<String, Location> loca = gson.fromJson(response, tipo);
 
+                    loca.forEach(
+                            (key, value) -> {
+                                locations.add(value);
+                            }
+                    );
+                    requireActivity().runOnUiThread(
+                            () -> {
+                                adapter.notifyDataSetChanged();
+                            }
+                    );
+                }
+        ).start();
     }
 
 }
