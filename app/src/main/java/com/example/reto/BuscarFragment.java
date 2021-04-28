@@ -90,7 +90,7 @@ public class BuscarFragment extends Fragment {
 
         new Thread(
                 () -> {
-                    String response = https.GETrequest(Cosntants.BASEURL + "locations.json");
+                    String response = https.GETrequest(Cosntants.BASEURL + "location.json");
                     Type tipo = new TypeToken<HashMap<String, Location>>() {}.getType();
                     HashMap<String, Location> loca = gson.fromJson(response, tipo);
 
