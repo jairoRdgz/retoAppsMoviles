@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.example.reto.util.Cosntants;
 import com.example.reto.util.HTTPSWebUtilDomi;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -49,6 +51,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     LocationAdapter adapter;
     LinearLayoutManager llManager;
     FirebaseFirestore fb;
+    FirebaseDatabase mDatabase;
 
     public MenuFragment() {
         // Required empty public constructor
@@ -88,16 +91,12 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         place = view.findViewById(R.id.place);
         txtDirection = view.findViewById(R.id.txtDirection);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         adapter = new LocationAdapter();
 
 
         fb = FirebaseFirestore.getInstance();
-=======
->>>>>>> parent of c6130fa (Fixed MenuError)
-=======
->>>>>>> parent of c6130fa (Fixed MenuError)
+        mDatabase = FirebaseDatabase.getInstance();
+
         /*
         llManager = new LinearLayoutManager(view2.getContext());
         adapter = new LocationAdapter();
@@ -137,15 +136,9 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         double lat = lista.get(0).getLatitude();
         double lon = lista.get(0).getLongitude();
 
+        DatabaseReference mDatabaseReference = mDatabase.getReference();
         Location location = new Location(UUID.randomUUID().toString(),nombre, direccion,lat, lon, null);
-
-        fb.collection("location").document(location.getId()).set(location);
-
-
-        Gson gson = new Gson();
-        String json = gson.toJson(location);
-        HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
-
+        mDatabaseReference.child("location").push().setValue(location, 0);
 
         adapter.addLocation(location);
         
