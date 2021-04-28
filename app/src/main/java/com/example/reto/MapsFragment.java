@@ -1,18 +1,24 @@
 package com.example.reto;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.example.reto.util.Cosntants;
+import com.example.reto.util.HTTPSWebUtilDomi;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -21,20 +27,34 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.HashMap;
 
 import static android.content.Context.LOCATION_SERVICE;
 
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment{
 
+    private View view;
     private GoogleMap mMap;
     private LocationManager manager;
     private Marker myMarker;
     private ArrayList<Marker> myMarkers;
+    private ArrayList<LatLng> latLngs;
     private FirebaseFirestore fb;
+    private FirebaseDatabase mDatabase;
+    private DatabaseReference mDatabaseReference;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -51,55 +71,60 @@ public class MapsFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
-            myMarkers = new ArrayList<Marker>();
 
             LatLng posini = new LatLng(3.4,-76.5);
             myMarker = mMap.addMarker(new MarkerOptions().position(posini));
 
             requestLocation();
-            //addMarker(6.0,25.0);
+
         }
     };
 
     public void addMarker(double lat, double lon){
-
-        LatLng pos = new LatLng(lat,lon);
         MarkerOptions options = new MarkerOptions();
+        LatLng pos = new LatLng(lat,lon);
         options.position(pos);
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         myMarkers.add(mMap.addMarker(options));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void addMarkers() {
+        latLngs = new ArrayList<LatLng>();
+
+        HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
+        Gson gson = new Gson();
+
+        new Thread(
+                () -> {
+                    String response = https.GETrequest(Cosntants.BASEURL + "location.json");
+                    Type tipo = new TypeToken<HashMap<String, com.example.reto.Location>>() {}.getType();
+                    HashMap<String, com.example.reto.Location> loca = gson.fromJson(response, tipo);
+
+                    loca.forEach(
+                            (key, value) -> {
+                                //PasarLos values al metodo y asignarlos al row ese
+                                addMarker(value.getLat(),value.getLon());
+                            }
+                    );
+                }
+        ).start();
 
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.fragment_maps, container, false);
+        myMarkers = new ArrayList<Marker>();
 
-        fb = FirebaseFirestore.getInstance();
+        addMarkers();
 
-        fb.collection("location").get().addOnSuccessListener(
-                command->{
-                    for(DocumentSnapshot doc: command.getDocuments()){
-                        com.example.reto.Location p = doc.toObject(com.example.reto.Location.class);
-                        if (p!=null) {
-                            LatLng pos = new LatLng(p.getLat(),p.getLon());
-                            MarkerOptions options = new MarkerOptions();
-                            options.position(pos);
-                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-                            myMarkers.add(mMap.addMarker(options));
-                            System.out.println("You are the red marker");
-                        }
-                    }
-                }
-        );
-
-        return inflater.inflate(R.layout.fragment_maps, container, false);
-
-
-
+        return view;
 
     }
 
@@ -142,4 +167,5 @@ public class MapsFragment extends Fragment {
                     }
                 });
     }
+
 }

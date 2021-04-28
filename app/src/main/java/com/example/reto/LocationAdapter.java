@@ -21,7 +21,7 @@ public class LocationAdapter  extends RecyclerView.Adapter<LocationView> {
 
     public void addLocation(Location location){
         locations.add(location);
-        this.notifyDataSetChanged();
+        //this.notifyDataSetChanged();
     }
 
     public ArrayList<Location> getLocations() {

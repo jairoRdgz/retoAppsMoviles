@@ -90,7 +90,7 @@ public class BuscarFragment extends Fragment {
         mDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mDatabase.getReference();
 
-        
+        /*
         mDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -120,11 +120,9 @@ public class BuscarFragment extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        });*/
 
-        Query query = fb.collection("location");
-
-        //getUsuarios();
+        getUsuarios();
 
         // Inflate the layout for this fragment
         return view;
@@ -135,7 +133,22 @@ public class BuscarFragment extends Fragment {
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
         Gson gson = new Gson();
 
+        new Thread(
+                () -> {
+                    String response = https.GETrequest(Cosntants.BASEURL + "location.json");
+                    Type tipo = new TypeToken<HashMap<String, Location>>() {}.getType();
+                    HashMap<String, Location> loca = gson.fromJson(response, tipo);
 
+                    loca.forEach(
+                            (key, value) -> {
+                                //PasarLos values al metodo y asignarlos al row ese
+                                adapter.addLocation(value);
+                                requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+                            }
+                    );
+                    requireActivity().runOnUiThread(() -> adapter.notifyDataSetChanged());
+                }
+        ).start();
     }
 
 }
