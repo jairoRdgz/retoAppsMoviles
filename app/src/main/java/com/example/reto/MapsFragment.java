@@ -24,11 +24,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -55,6 +59,7 @@ public class MapsFragment extends Fragment{
     private FirebaseFirestore fb;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mDatabaseReference;
+    private boolean flag;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -71,32 +76,52 @@ public class MapsFragment extends Fragment{
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
-
             LatLng posini = new LatLng(3.4,-76.5);
             myMarker = mMap.addMarker(new MarkerOptions().position(posini));
 
             requestLocation();
 
+            googleMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+                @Override
+                public void onCameraMove() {
+                    if (!flag) {
+
+                        addMarker();
+                        flag = true;
+                    }
+                }
+            });
+
         }
     };
 
-    public void addMarker(double lat, double lon){
-        MarkerOptions options = new MarkerOptions();
-        LatLng pos = new LatLng(lat,lon);
-        options.position(pos);
-        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        myMarkers.add(mMap.addMarker(options));
+
+    public void addMarker(){
+
+        System.out.println("AddMarker llamado");
+
+        for (int i=0; i<latLngs.size(); i++){
+            MarkerOptions options = new MarkerOptions();
+            LatLng pos = latLngs.get(i);
+            options.position(pos);
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            myMarkers.add(mMap.addMarker(options));
+            System.out.println("Marker agregado");
+        }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void addMarkers() {
-        latLngs = new ArrayList<LatLng>();
+    private void addMarkers(){
 
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
         Gson gson = new Gson();
 
-        new Thread(
-                () -> {
+        Thread secondThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try  {
                     String response = https.GETrequest(Cosntants.BASEURL + "location.json");
                     Type tipo = new TypeToken<HashMap<String, com.example.reto.Location>>() {}.getType();
                     HashMap<String, com.example.reto.Location> loca = gson.fromJson(response, tipo);
@@ -104,11 +129,20 @@ public class MapsFragment extends Fragment{
                     loca.forEach(
                             (key, value) -> {
                                 //PasarLos values al metodo y asignarlos al row ese
-                                addMarker(value.getLat(),value.getLon());
+                                System.out.println("Agregando Latlngs");
+                                LatLng latLng = new LatLng(value.getLat(), value.getLon());
+                                latLngs.add(latLng);
                             }
                     );
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-        ).start();
+            }
+        });
+
+        System.out.println("Iniciando hilo");
+        secondThread.start();
+
 
     }
 
@@ -120,8 +154,14 @@ public class MapsFragment extends Fragment{
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_maps, container, false);
-        myMarkers = new ArrayList<Marker>();
 
+        mDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mDatabase.getReference();
+
+        flag = false;
+
+        myMarkers = new ArrayList<Marker>();
+        latLngs = new ArrayList<LatLng>();
         addMarkers();
 
         return view;
@@ -141,7 +181,7 @@ public class MapsFragment extends Fragment{
 
     @SuppressLint("MissingPermission")
     public void requestLocation(){
-        manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1,
+        manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1,
                 new LocationListener(){
 
                     @Override

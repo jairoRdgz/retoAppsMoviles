@@ -64,12 +64,6 @@ public class Principal extends AppCompatActivity implements View.OnClickListener
         });
     }
 
-    public void agregarImagen(){
-        Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        file = new File(getExternalFilesDir(null) + "/photo.png");
-        startActivity(intento);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

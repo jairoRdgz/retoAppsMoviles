@@ -158,12 +158,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
         Location location = new Location(UUID.randomUUID().toString(),nombre, direccion,lat, lon, uri.getLastPathSegment());
         mDatabaseReference.child("location").push().setValue(location, 0);
-        mDatabaseReference.child("imgs").push();
         adapter.addLocation(location);
-
-        StorageReference sDatabaseReference = sDatabase.child("imgs");
-        sDatabaseReference.putFile(uri);
-        
     }
 
     public void agregarImagen(){
@@ -173,7 +168,6 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         Log.e(">>>>", "" + file);
         uri = FileProvider.getUriForFile(view.getContext(), "com.example.reto", file);
         intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-        System.out.println("llamando Activity for Result");
         startActivityForResult(intento, 12);
 
     }
@@ -192,7 +186,6 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
                     searchPlace();
                     break;
                 case R.id.btnAgregarImagen:
-                    System.out.println("Click listener");
                     agregarImagen();
                     break;
                 case R.id.btnRegistrar:
