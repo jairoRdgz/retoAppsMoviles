@@ -66,6 +66,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     ImageView picView;
     Uri uri;
     Intent intent;
+    String id;
 
     public MenuFragment() {
         // Required empty public constructor
@@ -155,8 +156,8 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         double lon = lista.get(0).getLongitude();
 
         DatabaseReference mDatabaseReference = mDatabase.getReference();
-
-        Location location = new Location(UUID.randomUUID().toString(),nombre, direccion,lat, lon, uri.getLastPathSegment());
+        String idLocation = id==null ? UUID.randomUUID().toString() : id;
+        Location location = new Location(idLocation,nombre, direccion,lat, lon, uri.getLastPathSegment());
         mDatabaseReference.child("location").push().setValue(location, 0);
         adapter.addLocation(location);
     }
@@ -164,7 +165,8 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     public void agregarImagen(){
 
         Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        file = new File(getActivity().getExternalFilesDir(null) + "/" +  UUID.randomUUID().toString());
+        //file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" +  id);
+        file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+id+".png");
         Log.e(">>>>", "" + file);
         uri = FileProvider.getUriForFile(view.getContext(), "com.example.reto", file);
         intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -172,10 +174,16 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    public void abrirGaleria(){
-        Intent in = new Intent(Intent.ACTION_GET_CONTENT);
-        in.setType("*/*");
-        startActivityForResult(in, 13);
+    public void sacarImagenDeGaleria(){
+        //Esto es la direccion del uri sin traducir
+        Log.e(">>>>>>>>>>>>", uri+"");
+        //Esto es la direccion del uri traducida
+        String path = UtilDomi.getPath(getActivity(), uri);
+        Log.e(">>>>>>>>>>>>", path+"");
+        //Esto es la imagen que el Uri encuentra en la galeria
+        Bitmap image = BitmapFactory.decodeFile(path);
+        //podemos guardar El path en la base de datos y cuando los descarguemos solo es ponerlos en el bitmap y en un imageView
+        //picView.setImageBitmap(image);
     }
 
     @Override
