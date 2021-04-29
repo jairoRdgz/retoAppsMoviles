@@ -1,6 +1,7 @@
 package com.example.reto;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,12 +14,14 @@ public class LocationView extends RecyclerView.ViewHolder {
     private TextView nombre;
     private TextView direccion;
     private TextView coordenadas;
+    private ImageView image;
 
     public LocationView(ConstraintLayout root) {
         super(root);
         nombre = root.findViewById(R.id.nombre);
         direccion = root.findViewById(R.id.direccion);
         coordenadas = root.findViewById(R.id.coordenadas);
+        image = root.findViewById(R.id.picture);
     }
 
     public ConstraintLayout getRoot() {
@@ -35,5 +38,9 @@ public class LocationView extends RecyclerView.ViewHolder {
 
     public TextView getCoordenadas() {
         return coordenadas;
+    }
+
+    public ImageView getImage() {
+        return image;
     }
 }

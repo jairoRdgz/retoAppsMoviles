@@ -166,9 +166,12 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
 
         Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" +  id);
-        file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+id+".png");
+        id = UUID.randomUUID().toString();
+        file = new File(getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)+"/"+id+".png");
         Log.e(">>>>", "" + file);
         uri = FileProvider.getUriForFile(view.getContext(), "com.example.reto", file);
+        //String path = UtilDomi.getPath(getActivity(), uri);
+        //Log.e(">>>>>>>>>>>>", path+"");
         intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         startActivityForResult(intento, 12);
 

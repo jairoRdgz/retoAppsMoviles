@@ -1,5 +1,8 @@
 package com.example.reto;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +49,11 @@ public class LocationAdapter  extends RecyclerView.Adapter<LocationView> {
         holder.getDireccion().setText(locations.get(position).getAddress());
         holder.getCoordenadas().setText("latitud:"+locations.get(position).getLat()+"  longitud:"+locations.get(position).getLon());
 
+        String vojabes = "/storage/emulated/0/Android/data/com.example.reto/files/Pictures/";
+
+        Bitmap bitmap = BitmapFactory.decodeFile(vojabes + locations.get(position).getImg());
+
+        holder.getImage().setImageBitmap(bitmap);
 
     }
 
