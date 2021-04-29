@@ -1,22 +1,30 @@
 package com.example.reto;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +33,8 @@ import com.example.reto.util.HTTPSWebUtilDomi;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -52,6 +62,10 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     LinearLayoutManager llManager;
     FirebaseFirestore fb;
     FirebaseDatabase mDatabase;
+    StorageReference sDatabase;
+    ImageView picView;
+    Uri uri;
+    Intent intent;
 
     public MenuFragment() {
         // Required empty public constructor
@@ -91,11 +105,15 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         place = view.findViewById(R.id.place);
         txtDirection = view.findViewById(R.id.txtDirection);
 
+        picView = view.findViewById(R.id.picView);
+
         adapter = new LocationAdapter();
 
 
         fb = FirebaseFirestore.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
+        sDatabase = FirebaseStorage.getInstance().getReference();
+        intent = new Intent();
 
         /*
         llManager = new LinearLayoutManager(view2.getContext());
@@ -137,21 +155,27 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         double lon = lista.get(0).getLongitude();
 
         DatabaseReference mDatabaseReference = mDatabase.getReference();
-        Location location = new Location(UUID.randomUUID().toString(),nombre, direccion,lat, lon, null);
-        mDatabaseReference.child("location").push().setValue(location, 0);
 
+        Location location = new Location(UUID.randomUUID().toString(),nombre, direccion,lat, lon, uri.getLastPathSegment());
+        mDatabaseReference.child("location").push().setValue(location, 0);
+        mDatabaseReference.child("imgs").push();
         adapter.addLocation(location);
+
+        StorageReference sDatabaseReference = sDatabase.child("imgs");
+        sDatabaseReference.putFile(uri);
         
     }
 
     public void agregarImagen(){
-        System.out.println("Camaraaaaaaa!!!");
+
         Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        /*file = new File(Environment.getExternalStorageDirectory() + "/photo.png");
+        file = new File(getActivity().getExternalFilesDir(null) + "/" +  UUID.randomUUID().toString());
         Log.e(">>>>", "" + file);
-        Uri uri = FileProvider.getUriForFile(view.getContext(), "com.example.reto", file);
-        intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);*/
-        startActivity(intento);
+        uri = FileProvider.getUriForFile(view.getContext(), "com.example.reto", file);
+        intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        System.out.println("llamando Activity for Result");
+        startActivityForResult(intento, 12);
+
     }
 
     public void abrirGaleria(){
@@ -168,6 +192,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
                     searchPlace();
                     break;
                 case R.id.btnAgregarImagen:
+                    System.out.println("Click listener");
                     agregarImagen();
                     break;
                 case R.id.btnRegistrar:
@@ -175,6 +200,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
                     break;
             }
         }catch (IOException e){
+            System.out.println("Exception");
             e.printStackTrace();
         }
     }
@@ -182,6 +208,14 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 12 && resultCode == getActivity().RESULT_OK) {
+            Bitmap imageBitmap = BitmapFactory.decodeFile(file.getPath());
+            picView.setImageBitmap(imageBitmap);
+            // uri = data.getData();
+            System.out.println("Tomamos la joto");
+        }else{
+            System.out.println("FFFFFFFFFFFFFFFFFFFFFFFFFFF");
+        }
     }
 
 }
