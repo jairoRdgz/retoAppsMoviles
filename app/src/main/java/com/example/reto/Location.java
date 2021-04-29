@@ -1,6 +1,7 @@
 package com.example.reto;
 
 import android.media.Image;
+import android.net.Uri;
 
 import java.util.ArrayList;
 
@@ -10,9 +11,9 @@ public class Location {
     protected String address;
     protected double lat;
     protected double lon;
-    protected Image img;
+    protected Uri img;
 
-    public Location(String id,String nombre, String direccion, double lat, double lon, Image img){
+    public Location(String id,String nombre, String direccion, double lat, double lon, Uri img){
         this.id = id;
         this.name = nombre;
         this.address = direccion;
@@ -41,7 +42,7 @@ public class Location {
         return lon;
     }
 
-    public Image getImg() {
+    public Uri getImg() {
         return img;
     }
 
@@ -61,7 +62,7 @@ public class Location {
         this.lon = lon;
     }
 
-    public void setImg(Image img) {
+    public void setImg(Uri img) {
         this.img = img;
     }
 

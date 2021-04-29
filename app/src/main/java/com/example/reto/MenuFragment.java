@@ -3,14 +3,19 @@ package com.example.reto;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +55,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     LocationAdapter adapter;
     LinearLayoutManager llManager;
     FirebaseFirestore fb;
+    Uri img;
 
 
     public MenuFragment() {
@@ -131,7 +137,7 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
         String direccion = txtDirection.getText().toString();
         double lat = lista.get(0).getLatitude();
         double lon = lista.get(0).getLongitude();
-        Location location = new Location(UUID.randomUUID().toString(), nombre, direccion,lat, lon, null);
+        Location location = new Location(UUID.randomUUID().toString(), nombre, direccion,lat, lon, img);
         Gson gson = new Gson();
         String json = gson.toJson(location);
         HTTPSWebUtilDomi https = new HTTPSWebUtilDomi();
@@ -173,13 +179,20 @@ public class MenuFragment extends Fragment implements View.OnClickListener{
     }
 
     public void agregarImagen(){
-        System.out.println("Camaraaaaaaa!!!");
-        Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        /*file = new File(Environment.getExternalStorageDirectory() + "/photo.png");
+
+        /*Intent intento = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        file = new File(Environment.getExternalStorageDirectory() + "/photo.png");
         Log.e(">>>>", "" + file);
         Uri uri = FileProvider.getUriForFile(view.getContext(), "com.example.reto", file);
-        intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);*/
-        startActivity(intento);
+        intento.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        startActivity(intento);*/
+
+        Intent galleryIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File file = new File(Environment.getExternalStorageDirectory()+ "/photo.jpeg");
+        Uri picUri = Uri.fromFile(file);
+        galleryIntent.putExtra(MediaStore.EXTRA_OUTPUT, picUri);
+        img = picUri;
+
     }
 
     public void abrirGaleria(){
